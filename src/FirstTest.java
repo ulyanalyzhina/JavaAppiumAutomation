@@ -248,6 +248,110 @@ public class FirstTest {
     }
 
     @Test
+    public void saveTwoArticleToMyList() {
+        String search_text_first_article = "Java";
+        String search_text_second_article = "Golang";
+        String first_article_title = "Java (programming language)";
+        String second_article_title = "Go (programming language)";
+
+        findArticleAndClickToAddToFolder(search_text_first_article, first_article_title);
+
+        waitForElementByAndClick(
+                By.id("org.wikipedia:id/onboarding_button"),
+                "Cannot find 'Got it' tip overlay",
+                5
+        );
+
+        waitForElementAndClear(
+                By.id("org.wikipedia:id/text_input"),
+                "Cannot find input to set name of article folder",
+                5
+        );
+
+        waitForElementPresentBy(
+                By.id("org.wikipedia:id/textinput_error"),
+                "Input was not been cleared and we cannot see validation error 'Please enter a title'",
+                15
+        );
+
+
+        String name_of_folder = "Learning programming";
+
+        waitForElementByAndSendKeys(
+                By.id("org.wikipedia:id/text_input"),
+                name_of_folder,
+                "Cannot put text into into articles folder input",
+                5
+        );
+
+        waitForElementByAndClick(
+                By.xpath("//*[@text='OK']"),
+                "Cannot press OK button",
+                5
+        );
+
+        waitForElementByAndClick(
+                By.xpath("//android.widget.ImageButton"),
+                "Cannot close article, cannot find X link",
+                5
+        );
+
+        findArticleAndClickToAddToFolder(search_text_second_article, second_article_title);
+
+        waitForElementByAndClick(
+                By.xpath("//android.widget.TextView[@text='" + name_of_folder + "']"),
+                "Cannot find created folder",
+                5
+        );
+
+        waitForElementByAndClick(
+                By.xpath("//android.widget.ImageButton"),
+                "Cannot close article, cannot find X link",
+                5
+        );
+
+        waitForElementByAndClick(
+                By.xpath("//android.widget.FrameLayout[@content-desc='My lists']"),
+                "Cannot find navigation button to my lists",
+                5
+        );
+
+        waitForElementByAndClick(
+                By.xpath("//*[@text='" + name_of_folder + "']"),
+                "Cannot find navigation button to my lists",
+                5
+        );
+
+        swipeElementToLeft(
+                By.xpath("//*[@text='" + first_article_title + "']"),
+                "Cannot find saved article"
+        );
+
+        waitForElementNotPresent(
+                By.xpath("//*[@text='" + first_article_title + "']"),
+                "Cannot delete saved article",
+                5
+        );
+
+        waitForElementByAndClick(
+                By.xpath("//*[@text='" + second_article_title + "']"),
+                "Cannot find element",
+                5
+        );
+
+        waitForElementPresentBy(
+                By.id("org.wikipedia:id/view_page_title_text"),
+                "Cannot find article title",
+                15
+        );
+
+        assertElementHasText(
+                By.id("org.wikipedia:id/view_page_title_text"),
+                second_article_title,
+                "Cannot find title" + second_article_title + "as article title");
+    }
+
+    @Test
     public void saveFirstArticleToMyList() {
 
         findArticleAndClickToAddToFolder("Java", "Java (programming language)");
