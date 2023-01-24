@@ -173,5 +173,3 @@ public class SearchPageObject extends MainPageObject {
                 5);
     }
 }
-
-//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Java (Programming language)']/../*[@resource-id='org.wikipedia:id/page_list_item_description'][@text='Object-oriented programming language']
