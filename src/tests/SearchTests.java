@@ -73,4 +73,14 @@ public class SearchTests extends CoreTestCase {
         List<WebElement> els = SearchPageObject.assertSearchedResultsAreMoreThanOne();
         SearchPageObject.assertAllTitlesHaveText(els, "Java");
     }
+
+    @Test
+    public void testVerifyTitleAndDescriptionInSearch(){
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Java");
+        SearchPageObject.waitForElementByTitleAndDescription(
+                "Java (programming language)",
+                "Object-oriented programming language");
+    }
 }
