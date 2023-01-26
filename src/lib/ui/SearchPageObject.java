@@ -166,10 +166,32 @@ public class SearchPageObject extends MainPageObject {
 
     }
 
+    public void assertSearchedItemHasTitleAndDescription(
+            List<WebElement> els,
+            int index,
+            String title,
+            String description
+    ){
+        assertEquals((title),els.get(index)
+                .findElement(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title']"))
+                .getText());
+        assertEquals((description), els.get(index)
+                .findElement(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_description']"))
+                .getText());
+    }
+
     public void waitForElementByTitleAndDescription(String title, String description){
         this.waitForElementPresentBy(
                 By.xpath(getSearchResultByTitleAndDescription(title,  description)),
                 "Cannot find article title",
                 5);
+    }
+
+    public List<WebElement> getAllSearchItems(){
+        return this.waitForElementsListPresentAndToBeMoreThan(
+                By.xpath(SEARCH_RESULT_LIST_ITEM),
+                "There is no items in the search",
+                5,
+                2);
     }
 }
