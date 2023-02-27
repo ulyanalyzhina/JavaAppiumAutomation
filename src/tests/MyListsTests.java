@@ -2,20 +2,28 @@ package tests;
 
 import lib.CoreTestCase;
 import lib.ui.*;
+import lib.ui.factories.ArticlePageObjectFactory;
+import lib.ui.factories.SearchPageObjectFactory;
 import org.junit.Test;
 
 public class MyListsTests extends CoreTestCase {
+    private static final String name_of_folder = "Learning programming";
 
     @Test
     public void testSaveFirstArticleToMyList() {
         String searchText = "Java";
         String articleTitle = "Java (programming language)";
-        String name_of_folder = "Learning programming";
+        //String name_of_folder = "Learning programming";
 
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
+        ArticlePageObject ArticlePageObject = ArticlePageObjectFactory.get(driver);
 
         findArticleAndClickToAddToFolder(searchText, articleTitle);
-        ArticlePageObject.addArticleToMyListAndCreateFolder(name_of_folder);
+        if(Platform.getInstance().isAndroid()){
+            ArticlePageObject.addArticleToMyListAndCreateFolder(name_of_folder);
+        } else {
+            ArticlePageObject.addArticleToMySaved();
+        }
+
         ArticlePageObject.closeArticle();
 
         NavigationUI NavigationUI = new NavigationUI(driver);
@@ -35,7 +43,7 @@ public class MyListsTests extends CoreTestCase {
 
         String name_of_folder = "Learning programming";
         findArticleAndClickToAddToFolder(search_text_first_article, first_article_title);
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
+        ArticlePageObject ArticlePageObject = ArticlePageObjectFactory.get(driver);
 
         ArticlePageObject.addArticleToMyListAndCreateFolder(name_of_folder);
         ArticlePageObject.closeArticle();
@@ -61,12 +69,12 @@ public class MyListsTests extends CoreTestCase {
     }
 
     private void findArticleAndClickToAddToFolder(String article_text, String article_title) {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
+        SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
         SearchPageObject.initSearchInput();
         SearchPageObject.typeSearchLine(article_text);
         SearchPageObject.clickByArticleWithSubString(article_title);
 
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
+        ArticlePageObject ArticlePageObject = ArticlePageObjectFactory.get(driver);
         ArticlePageObject.waitForTitleElement();
     }
 }

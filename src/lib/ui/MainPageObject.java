@@ -16,6 +16,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static jdk.nashorn.internal.objects.Global.println;
+
 public class MainPageObject extends CoreTestCase {
 
 
@@ -172,14 +174,14 @@ public class MainPageObject extends CoreTestCase {
         return element.getAttribute(attribute);
     }
 
-    private By getLocatorWithByString(String locator_with_type){
+    private By getLocatorWithByString(String locator_with_type) {
         String[] exploded_locator = locator_with_type.split(Pattern.quote(":"), 2);
         String by_type = exploded_locator[0];
         String locator = exploded_locator[1];
 
-        if(by_type.equals("xpath")){
+        if (by_type.equals("xpath")) {
             return By.xpath(locator);
-        } else if (by_type.equals("id")){
+        } else if (by_type.equals("id")) {
             return By.id(locator);
         } else {
             throw new IllegalArgumentException("Cannot get type of locator. Locator: " + locator_with_type);
@@ -203,14 +205,35 @@ public class MainPageObject extends CoreTestCase {
             String description,
             String locatorTitle,
             String locatorDescription
-    ){
+    ) {
         By byTitle = this.getLocatorWithByString(locatorTitle);
-        assertEquals((title),els.get(index)
-                .findElement( byTitle)
+        assertEquals((title), els.get(index)
+                .findElement(byTitle)
                 .getText());
         By byDescription = this.getLocatorWithByString(locatorTitle);
         assertEquals((description), els.get(index)
                 .findElement(byDescription)
                 .getText());
+    }
+
+    public void swipeUpTillElementAppear(String locator, String error_message, int max_swipes ){
+        int already_swiped = 0;
+        this.waitForElementPresentBy(locator, "Element" + locator + "not found", 60);
+        while (!this.isElementLocatedOnTheScreen(locator)){
+            if(already_swiped > max_swipes){
+                Assert.assertTrue(error_message, this.isElementLocatedOnTheScreen(locator));
+            }
+        }
+
+        swipeUpQuick();
+        ++already_swiped;
+    }
+
+    public boolean isElementLocatedOnTheScreen(String locator) {
+        int element_location_by_y = this.waitForElementPresentBy(
+                locator, "Cannot find Element by locator(for ios isElementLocatedOnTheScreen)" + locator, 15
+        ).getLocation().getY();
+        int screen_size_by_y = driver.manage().window().getSize().getHeight();
+        return element_location_by_y < screen_size_by_y;
     }
 }
