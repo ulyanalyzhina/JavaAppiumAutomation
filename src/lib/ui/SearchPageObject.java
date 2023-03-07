@@ -35,9 +35,10 @@ abstract public class SearchPageObject extends MainPageObject {
     }
 
     public void initSearchInput() {
-        this.waitForElementPresent(
+        this.waitForElementPresentBy(
                 SEARCH_INIT_ELEMENT,
-                "Cannot find search input after clicking search init element"
+                "Cannot find search input after clicking search init element",
+                15
         );
         this.waitForElementByAndClick(
                 SEARCH_INIT_ELEMENT,
@@ -87,6 +88,7 @@ abstract public class SearchPageObject extends MainPageObject {
 
     public void clickByArticleWithSubString(String substring) {
         String search_result = getResultSearchElement(substring);
+
         this.waitForElementByAndClick(
                 search_result,
                 "Cannot find and click search result",

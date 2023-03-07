@@ -7,6 +7,7 @@ public class AndroidArticlePageObject extends ArticlePageObject {
     static {
         TITLE = "id:org.wikipedia:id/view_page_title_text";
                 FOOTER_ELEMENT = "xpath://*['View page in browser']";
+                //FOOTER_ELEMENT == "xpath://XCUIElementTypeStaticText[@name='View article in browser']";
                 OPTIONS_BUTTON = "xpath://android.widget.ImageView[@content-desc='More options']";
                 OPTIONS_ADD_TO_MY_LIST_BUTTON = "xpath:/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.ListView/android.widget.LinearLayout[3]/android.widget.RelativeLayout/android.widget.TextView";
                 ADD_TO_MY_LIST_OVERLAY = "id:org.wikipedia:id/onboarding_button";

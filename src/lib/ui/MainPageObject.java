@@ -16,8 +16,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static jdk.nashorn.internal.objects.Global.println;
-
 public class MainPageObject extends CoreTestCase {
 
 
@@ -47,7 +45,7 @@ public class MainPageObject extends CoreTestCase {
         WebDriverWait wait = new WebDriverWait(driver, timeout_in_seconds);
         wait.withMessage(error_message + "\n");
         return wait.until(
-                ExpectedConditions.visibilityOfElementLocated(by)
+                ExpectedConditions.presenceOfElementLocated(by)
         );
     }
 
@@ -62,6 +60,13 @@ public class MainPageObject extends CoreTestCase {
 
     public WebElement waitForElementByAndClick(String locator, String error_message, long timeout_in_seconds) {
         WebElement element = waitForElementPresentBy(locator, error_message, timeout_in_seconds);
+        element.click();
+        return element;
+    }
+
+    public WebElement waitForElementByAndDoubleClick(String locator, String error_message, long timeout_in_seconds) {
+        WebElement element = waitForElementPresentBy(locator, error_message, timeout_in_seconds);
+        element.click();
         element.click();
         return element;
     }
@@ -130,23 +135,39 @@ public class MainPageObject extends CoreTestCase {
     }
 
     public void swipeElementToLeft(String locator, String error_message) {
+        //XCUIElementTypeCell/XCUIElementTypeOther[2]
         WebElement element = waitForElementPresentBy(
                 locator,
                 error_message,
                 10);
+
         int left_x = element.getLocation().getX();
         int right_x = left_x + element.getSize().getWidth();
         int upper_y = element.getLocation().getY();
         int lower_y = upper_y + element.getSize().getHeight();
         int middle_y = (upper_y + lower_y) / 2;
 
+        System.out.println(left_x + " :left_x");
+        System.out.println(right_x + " :right_x");
+        System.out.println(upper_y + " :upper_y");
+        System.out.println(lower_y + " :lower_y");
+        System.out.println(middle_y + " :middle_y");
+        System.out.println(element.getSize().getWidth() + " :left_x");
+
         TouchAction action = new TouchAction(driver);
-        action
-                .press(PointOption.point(right_x, middle_y))
-                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)))
-                .moveTo(PointOption.point(left_x, middle_y))
-                .release().
-                perform();
+        action.press(PointOption.point(right_x, middle_y));
+        action.waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)));
+        if(Platform.getInstance().isAndroid()){
+            action.moveTo(PointOption.point(left_x, middle_y));
+        } else {
+            int offset_x = (-1 * element.getSize().getWidth());
+            System.out.println(offset_x + " :offset_x");
+            System.out.println(locator + " :element");
+            action.moveTo(PointOption.point(offset_x, 0));
+        }
+
+        action.release();
+        action.perform();
     }
 
     public void assertElementNotPresent(By by, String error_message) {
@@ -176,7 +197,9 @@ public class MainPageObject extends CoreTestCase {
 
     private By getLocatorWithByString(String locator_with_type) {
         String[] exploded_locator = locator_with_type.split(Pattern.quote(":"), 2);
+
         String by_type = exploded_locator[0];
+
         String locator = exploded_locator[1];
 
         if (by_type.equals("xpath")) {
@@ -218,15 +241,14 @@ public class MainPageObject extends CoreTestCase {
 
     public void swipeUpTillElementAppear(String locator, String error_message, int max_swipes ){
         int already_swiped = 0;
-        this.waitForElementPresentBy(locator, "Element" + locator + "not found", 60);
+        //this.waitForElementPresentBy(locator, "Element" + locator + "not found", 60);
         while (!this.isElementLocatedOnTheScreen(locator)){
             if(already_swiped > max_swipes){
                 Assert.assertTrue(error_message, this.isElementLocatedOnTheScreen(locator));
             }
+            swipeUpQuick();
+            ++already_swiped;
         }
-
-        swipeUpQuick();
-        ++already_swiped;
     }
 
     public boolean isElementLocatedOnTheScreen(String locator) {
@@ -235,5 +257,20 @@ public class MainPageObject extends CoreTestCase {
         ).getLocation().getY();
         int screen_size_by_y = driver.manage().window().getSize().getHeight();
         return element_location_by_y < screen_size_by_y;
+    }
+
+    public void clickElementToTheRightUpperConner(String locator, String error_message) {
+
+       WebElement element = this.waitForElementPresent(locator + "/..", error_message);
+       int right_x = element.getLocation().getX();
+       int upper_y = element.getLocation().getY();
+       int lower_y = upper_y + element.getSize().getHeight();
+        int middle_y = (upper_y + lower_y) / 2;
+        int width = element.getSize().getWidth();
+       int point_to_click_x = (right_x + width)-3;
+       int point_to_click_y = middle_y;
+
+       TouchAction action = new TouchAction(driver);
+       action.tap(PointOption.point(point_to_click_x, point_to_click_y)).perform();
     }
 }

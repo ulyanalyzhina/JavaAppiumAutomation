@@ -1,6 +1,8 @@
 package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.TouchAction;
+import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebElement;
 
@@ -15,7 +17,14 @@ abstract public class ArticlePageObject extends MainPageObject {
             MY_LIST_NAME_INPUT_ERROR,
             MY_LIST_OK_BUTTON,
             CLOSE_ARTICLE_BUTTON,
-            ARTICLE_TITLE_IN_LIST_TPL;
+            ARTICLE_TITLE_IN_LIST_TPL,
+            ADD_TO_MY_LIST_NOTIFICATION,
+            ADD_TO_MY_LIST_ICON,
+            ADDED_ARTICLE_NOTIFICATION_IN_HEADER,
+    ADD_TO_MY_LIST_BUTTON,
+            CREATE_LIST_BUTTON,
+            HOME_BUTTON
+    ;
 
     private static String getArticleTitleInList(String substring) {
         return ARTICLE_TITLE_IN_LIST_TPL.replace("{SUBSTRING}", substring);
@@ -54,13 +63,13 @@ abstract public class ArticlePageObject extends MainPageObject {
             this.swipeUpToFindElement(
                     FOOTER_ELEMENT,
                     "Cannot find the end of article",
-                    40
+                    50
             );
         } else {
             this.swipeUpTillElementAppear(
                     FOOTER_ELEMENT,
                     "Cannot find the end of article(ios)",
-                    40
+                    50
             );
         }
 
@@ -70,10 +79,46 @@ abstract public class ArticlePageObject extends MainPageObject {
         this.assertElementPresent(TITLE, "Something goes wrong with article title");
     }
 
-    public void addArticleToMySaved(){
+    public void addArticleToMySaved(String name_of_folder){
         this.waitForElementByAndClick(OPTIONS_ADD_TO_MY_LIST_BUTTON,
                 "Cannot find option to add article to reading list",
                 5);
+        this.waitForElementPresentBy(
+                ADD_TO_MY_LIST_NOTIFICATION,
+                "Cannot find notification about adding article to reading list",
+                15);
+        this.tapPointOnTheScreen(15, 720);
+        this.waitForElementPresentBy(ADDED_ARTICLE_NOTIFICATION_IN_HEADER,
+                "There is no notification about adding article on the creating list page",
+                15);
+
+        this.waitForElementByAndClick(
+                ADD_TO_MY_LIST_BUTTON ,
+                "Cannot find button to create list",
+                5
+        );
+
+        this.waitForElementAndClear(
+                MY_LIST_NAME_INPUT,
+                "Cannot find input to set name of article folder",
+                5
+        );
+        this.waitForElementByAndSendKeys(
+                MY_LIST_NAME_INPUT,
+                name_of_folder,
+                "Cannot put text into articles folder input",
+                5
+        );
+        this.waitForElementByAndClick(
+                CREATE_LIST_BUTTON,
+                "Cannot find or click 'Create reading list' button",
+                5
+        );
+    }
+
+    public void tapPointOnTheScreen(int x, int y){
+        TouchAction touchAction = new TouchAction(driver);
+        touchAction.tap(PointOption.point(x, y)).perform();
     }
 
     public void addArticleToMyListAndCreateFolder(String name_of_folder) {
@@ -151,10 +196,19 @@ abstract public class ArticlePageObject extends MainPageObject {
     }
 
     public void closeArticle() {
-        this.waitForElementByAndClick(
-                CLOSE_ARTICLE_BUTTON,
-                "Cannot close article, cannot find X link",
-                5
-        );
+        if(Platform.getInstance().isAndroid()) {
+            this.waitForElementByAndClick(
+                    CLOSE_ARTICLE_BUTTON,
+                    "Cannot close article, cannot find X link",
+                    5
+            );
+        } else {
+
+            this.waitForElementByAndClick(
+                    HOME_BUTTON,
+                    "Cannot find 'W' button to close article",
+                    5
+            );
+        }
     }
 }
