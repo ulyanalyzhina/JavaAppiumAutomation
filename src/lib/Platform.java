@@ -59,12 +59,12 @@ public class Platform {
     private DesiredCapabilities getIOSDesiredCapabilities() {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platform", "iOS");
-        capabilities.setCapability("deviceName", "iPhone 11 Pro");
+        capabilities.setCapability("deviceName", "iPhone 13");
         capabilities.setCapability("platformVersion", "15.5");
         capabilities.setCapability("waitForIdleTimeout", 0);
         capabilities.setCapability(
                 "app",
-                "/Users/ulyana/IdeaProjects/JavaAppiumAutomation/JavaAppiumAutomation/apks/Wikipedia77.app");
+                "/Users/ulyana/IdeaProjects/JavaAppiumAutomation/JavaAppiumAutomation/src/apks/Wikipedia77.app");
         return capabilities;
     }
 
