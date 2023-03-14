@@ -48,6 +48,6 @@ public class ArticleTests extends CoreTestCase {
         SearchPageObject.typeSearchLine("Java");
         SearchPageObject.clickByArticleWithSubString("Object-oriented programming language");
         ArticlePageObject ArticlePageObject = ArticlePageObjectFactory.get(driver);
-        ArticlePageObject.assertArticlePageTitlePresent();
+        ArticlePageObject.assertArticlePageTitlePresent("Java (programming language)");
     }
 }

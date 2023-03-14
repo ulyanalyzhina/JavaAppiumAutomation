@@ -88,7 +88,12 @@ public class MainPageObject extends CoreTestCase {
 
     public void assertElementHasText(String locator, String expectedValue, String error_message) {
         WebElement elementWithText = waitForElementPresentBy(locator, error_message, 5);
-        String text = elementWithText.getAttribute("text");
+        String text;
+        if(Platform.getInstance().isAndroid()){
+            text = elementWithText.getAttribute("text");
+        } else {
+            text = elementWithText.getAttribute("name");
+        }
 
         Assert.assertEquals(
                 error_message,
@@ -135,7 +140,6 @@ public class MainPageObject extends CoreTestCase {
     }
 
     public void swipeElementToLeft(String locator, String error_message) {
-        //XCUIElementTypeCell/XCUIElementTypeOther[2]
         WebElement element = waitForElementPresentBy(
                 locator,
                 error_message,
@@ -156,14 +160,14 @@ public class MainPageObject extends CoreTestCase {
 
         TouchAction action = new TouchAction(driver);
         action.press(PointOption.point(right_x, middle_y));
-        action.waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)));
+        action.waitAction(WaitOptions.waitOptions(Duration.ofMillis(500)));
         if(Platform.getInstance().isAndroid()){
             action.moveTo(PointOption.point(left_x, middle_y));
         } else {
             int offset_x = (-1 * element.getSize().getWidth());
             System.out.println(offset_x + " :offset_x");
             System.out.println(locator + " :element");
-            action.moveTo(PointOption.point(offset_x, 0));
+            action.moveTo(PointOption.point(left_x/2, 283));
         }
 
         action.release();
@@ -189,25 +193,21 @@ public class MainPageObject extends CoreTestCase {
             throw new AssertionError(default_message + " " + error_message);
         }
     }
-
-    public String waitForElementAndGetAttribute(String locator, String attribute, String error_message, long timeoutInSeconds) {
-        WebElement element = waitForElementPresentBy(locator, error_message, timeoutInSeconds);
-        return element.getAttribute(attribute);
-    }
-
     private By getLocatorWithByString(String locator_with_type) {
         String[] exploded_locator = locator_with_type.split(Pattern.quote(":"), 2);
 
-        String by_type = exploded_locator[0];
-
-        String locator = exploded_locator[1];
-
-        if (by_type.equals("xpath")) {
-            return By.xpath(locator);
-        } else if (by_type.equals("id")) {
-            return By.id(locator);
+        if(exploded_locator.length == 2){
+            String by_type = exploded_locator[0];
+            String locator = exploded_locator[1];
+            if (by_type.equals("xpath")) {
+                return By.xpath(locator);
+            } else if (by_type.equals("id")) {
+                return By.id(locator);
+            } else {
+                throw new IllegalArgumentException("Cannot get type of locator. Locator: " + locator_with_type);
+            }
         } else {
-            throw new IllegalArgumentException("Cannot get type of locator. Locator: " + locator_with_type);
+            throw new IllegalArgumentException("The type of locator you set was incorrect" + locator_with_type);
         }
     }
 

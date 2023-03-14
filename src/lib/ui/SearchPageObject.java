@@ -92,7 +92,7 @@ abstract public class SearchPageObject extends MainPageObject {
         this.waitForElementByAndClick(
                 search_result,
                 "Cannot find and click search result",
-                10
+                15
         );
     }
 

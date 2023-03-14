@@ -9,9 +9,12 @@ import org.openqa.selenium.WebElement;
 abstract public class ArticlePageObject extends MainPageObject {
     protected static String
             TITLE,
+            TITLE_TPL,
+            TITLE_SECOND_ARTICLE,
             FOOTER_ELEMENT,
             OPTIONS_BUTTON,
             OPTIONS_ADD_TO_MY_LIST_BUTTON,
+            DELETE_FROM_SAVED_LIST_BUTTON,
             ADD_TO_MY_LIST_OVERLAY,
             MY_LIST_NAME_INPUT,
             MY_LIST_NAME_INPUT_ERROR,
@@ -19,15 +22,19 @@ abstract public class ArticlePageObject extends MainPageObject {
             CLOSE_ARTICLE_BUTTON,
             ARTICLE_TITLE_IN_LIST_TPL,
             ADD_TO_MY_LIST_NOTIFICATION,
+            ADD_TO_MY_LIST_NOTIFICATION_TPL,
             ADD_TO_MY_LIST_ICON,
             ADDED_ARTICLE_NOTIFICATION_IN_HEADER,
     ADD_TO_MY_LIST_BUTTON,
             CREATE_LIST_BUTTON,
-            HOME_BUTTON
-    ;
+            HOME_BUTTON;
 
-    private static String getArticleTitleInList(String substring) {
-        return ARTICLE_TITLE_IN_LIST_TPL.replace("{SUBSTRING}", substring);
+    private static String getTitleFromTPL(String substring) {
+        return TITLE_TPL.replace("{SUBSTRING}", substring);
+    }
+
+    private static String getNotificationAboutAddingArticle(String title){
+        return ADD_TO_MY_LIST_NOTIFICATION_TPL.replace("{SUBSTRING}", title);
     }
 
     public ArticlePageObject(AppiumDriver driver) {
@@ -39,9 +46,16 @@ abstract public class ArticlePageObject extends MainPageObject {
                 "Cannot find article title on page", 15);
     }
 
+    public WebElement waitForTitleElement(String title ) {
+        return this.waitForElementPresentBy(getTitleFromTPL(title),
+                "Cannot find article title on page", 15);
+    }
+
+
+
     public void clickOnArticle(String article_title) {
         this.waitForElementByAndClick(
-               getArticleTitleInList(article_title),
+                getTitleFromTPL(article_title),
                 "Cannot find element",
                 5
         );
@@ -75,8 +89,8 @@ abstract public class ArticlePageObject extends MainPageObject {
 
     }
 
-    public void assertArticlePageTitlePresent() {
-        this.assertElementPresent(TITLE, "Something goes wrong with article title");
+    public void assertArticlePageTitlePresent(String title) {
+        this.assertElementPresent(getTitleFromTPL(title), "Something goes wrong with article title");
     }
 
     public void addArticleToMySaved(String name_of_folder){
@@ -87,7 +101,7 @@ abstract public class ArticlePageObject extends MainPageObject {
                 ADD_TO_MY_LIST_NOTIFICATION,
                 "Cannot find notification about adding article to reading list",
                 15);
-        this.tapPointOnTheScreen(15, 720);
+        this.tapPointOnTheScreen(26, 786);//15,720
         this.waitForElementPresentBy(ADDED_ARTICLE_NOTIFICATION_IN_HEADER,
                 "There is no notification about adding article on the creating list page",
                 15);
@@ -167,32 +181,43 @@ abstract public class ArticlePageObject extends MainPageObject {
         );
     }
 
-    public void assertElementHasTitle(String second_article_title) {
+    public void assertElementHasTitle(String title) {
         this.assertElementHasText(
-                TITLE,
-                second_article_title,
-                "Cannot find title" + second_article_title + "as article title");
+                getTitleFromTPL(title),
+                title,
+                "Cannot find title" + title + "as article title");
     }
 
 
-    public void addArticleToMyList(String name_of_folder) {
-        this.waitForElementByAndClick(
-                OPTIONS_BUTTON,
-                "Cannot find button to open article options",
-                5
-        );
+    public void addArticleToMyList(String name_of_folder, String title) {
+        if(Platform.getInstance().isAndroid()) {
+            this.waitForElementByAndClick(
+                    OPTIONS_BUTTON,
+                    "Cannot find button to open article options",
+                    5
+            );
 
-        this.waitForElementByAndClick(
-                OPTIONS_ADD_TO_MY_LIST_BUTTON,
-                "cannot find option to add article to reading list",
-                5
-        );
+            this.waitForElementByAndClick(
+                    OPTIONS_ADD_TO_MY_LIST_BUTTON,
+                    "cannot find option to add article to reading list",
+                    15
+            );
 
-        this.waitForElementByAndClick(
-                "//android.widget.TextView[@text='" + name_of_folder + "']",
-                "Cannot find created folder",
-                5
-        );
+            this.waitForElementByAndClick(
+                    "xpath://android.widget.TextView[@text='" + name_of_folder + "']",
+                    "Cannot find created folder",
+                    5
+            );
+        } else {
+            this.waitForElementByAndClick(OPTIONS_ADD_TO_MY_LIST_BUTTON,
+                    "Cannot find option to add article to reading list",
+                    5);
+            this.waitForElementPresentBy(
+                    getNotificationAboutAddingArticle(title),
+                    "Cannot find notification about adding article to reading list",
+                    15);
+            this.tapPointOnTheScreen(26, 786);
+        }
     }
 
     public void closeArticle() {
@@ -203,12 +228,18 @@ abstract public class ArticlePageObject extends MainPageObject {
                     5
             );
         } else {
-
             this.waitForElementByAndClick(
                     HOME_BUTTON,
                     "Cannot find 'W' button to close article",
                     5
             );
         }
+    }
+
+    public void deleteArticleFromReadingList(){
+        this.waitForElementByAndClick(DELETE_FROM_SAVED_LIST_BUTTON, "Cannot find button to delete article from saved",5 );
+        this.waitForElementPresentBy(OPTIONS_ADD_TO_MY_LIST_BUTTON,
+                "Cannot find option to add article to reading list",
+                5);
     }
 }

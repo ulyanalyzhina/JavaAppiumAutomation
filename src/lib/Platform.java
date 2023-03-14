@@ -52,15 +52,15 @@ public class Platform {
         capabilities.setCapability("appActivity", ".main.MainActivity");
         capabilities.setCapability(
                 "app",
-                "/Users/ulyana/IdeaProjects/JavaAppiumAutomation/JavaAppiumAutomation/apks/org.wikipedia.apk");
+                "/Users/ulyana/IdeaProjects/JavaAppiumAutomation/JavaAppiumAutomation/src/apks/org.wikipedia.apk");
         return capabilities;
     }
 
     private DesiredCapabilities getIOSDesiredCapabilities() {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platform", "iOS");
-        capabilities.setCapability("deviceName", "iPhone 13");
-        capabilities.setCapability("platformVersion", "15.5");
+        capabilities.setCapability("deviceName", "iPhone 11");
+        capabilities.setCapability("platformVersion", "14.5");
         capabilities.setCapability("waitForIdleTimeout", 0);
         capabilities.setCapability(
                 "app",
@@ -73,7 +73,7 @@ public class Platform {
         return myPlatform.equals(platform);
     }
 
-    private String getPlatformVar() {
+    public String getPlatformVar() {
         return System.getenv("PLATFORM");
     }
 }
