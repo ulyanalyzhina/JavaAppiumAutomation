@@ -233,7 +233,7 @@ public class MainPageObject extends CoreTestCase {
         assertEquals((title), els.get(index)
                 .findElement(byTitle)
                 .getText());
-        By byDescription = this.getLocatorWithByString(locatorTitle);
+        By byDescription = this.getLocatorWithByString(locatorDescription);
         assertEquals((description), els.get(index)
                 .findElement(byDescription)
                 .getText());
